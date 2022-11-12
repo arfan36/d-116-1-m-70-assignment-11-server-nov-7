@@ -71,7 +71,7 @@ async function run() {
         // ─── Review Api ──────────────────────────────────────────────
 
         // Create (C) : insertOne
-        app.post('/reviews', async (req, res) => {
+        app.post('/reviews', verifyJWT, async (req, res) => {
             const reviews = req.body;
             const result = await reviewCollection.insertOne(reviews);
             res.send(result);
