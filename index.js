@@ -70,8 +70,51 @@ async function run() {
 
         // ─── Review Api ──────────────────────────────────────────────
 
+        // Read (R) by user_email
+        app.get('/reviews-email', async (req, res) => {
+
+            let query = {};
+            if (req.query.user_email) {
+                query = {
+                    user_email: req.query.user_email
+                };
+            }
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
+        // Read (R) by product_id
+        app.get('/reviews-id', async (req, res) => {
+
+            let query = {};
+            if (req.query.product_id) {
+                query = {
+                    product_id: req.query.product_id
+                };
+            }
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
+        // Read (R) by user_email and product_id
+        app.get('/reviews-email-id', async (req, res) => {
+
+            let query = {};
+            if (req.query.user_email && req.query.product_id) {
+                query = {
+                    user_email: req.query.user_email,
+                    product_id: req.query.product_id
+                };
+            }
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
         // Create (C) : insertOne
-        app.post('/reviews', verifyJWT, async (req, res) => {
+        app.post('/reviews', async (req, res) => {
             const reviews = req.body;
             const result = await reviewCollection.insertOne(reviews);
             res.send(result);
