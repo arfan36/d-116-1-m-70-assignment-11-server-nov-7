@@ -35,6 +35,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const serviceCollection = client.db('honestDelivery').collection('services');
+        const reviewCollection = client.db('honestDelivery').collection('reviews');
 
         // (C) : jwt token
         app.post('/jwt', (req, res) => {
@@ -67,6 +68,14 @@ async function run() {
             res.send(service);
         });
 
+        // ─── Review Api ──────────────────────────────────────────────
+
+        // Create (C) : insertOne
+        app.post('/reviews', async (req, res) => {
+            const reviews = req.body;
+            const result = await reviewCollection.insertOne(reviews);
+            res.send(result);
+        });
     }
     finally {
 
