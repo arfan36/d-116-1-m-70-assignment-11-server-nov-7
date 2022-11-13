@@ -68,7 +68,16 @@ async function run() {
             res.send(service);
         });
 
+
         // ─── Review Api ──────────────────────────────────────────────
+
+        // to update Read (R) specific item
+        app.get('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const userReview = await reviewCollection.findOne(query);
+            res.send(userReview);
+        });
 
         // Read (R) by user_email
         app.get('/reviews-email', async (req, res) => {
@@ -117,6 +126,29 @@ async function run() {
         app.post('/reviews', async (req, res) => {
             const reviews = req.body;
             const result = await reviewCollection.insertOne(reviews);
+            res.send(result);
+        });
+
+        // Update (U) or insert (C) : updateOne //! upsert
+        app.put('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const userReview = req.body;
+            const option = { upsert: true };  // update or insert
+            const updateUserReview = {
+                $set: {
+                    product_id: userReview.product_id,
+                    product_name: userReview.product_name,
+                    product_img: userReview.product_img,
+                    product_price: userReview.product_price,
+                    product_description: userReview.product_description,
+                    user_name: userReview.user_name,
+                    user_photoURL: userReview.user_photoURL,
+                    user_email: userReview.user_email,
+                    review_message: userReview.review_message
+                }
+            };
+            const result = await reviewCollection.updateOne(filter, updateUserReview, option);
             res.send(result);
         });
     }
