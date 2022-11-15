@@ -71,6 +71,19 @@ async function run() {
 
         // ─── Review Api ──────────────────────────────────────────────
 
+        // Read (R)
+        app.get('/reviews', async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    user_email: req.query.email
+                };
+            }
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
         // to update Read (R) specific item
         app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
@@ -151,6 +164,15 @@ async function run() {
             const result = await reviewCollection.updateOne(filter, updateUserReview, option);
             res.send(result);
         });
+
+        // Delete (D) delete One
+        app.delete('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await reviewCollection.deleteOne(filter);
+            res.send(result);
+        });
+
     }
     finally {
 
