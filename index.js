@@ -194,22 +194,15 @@ async function run() {
             res.send(myServices);
         });
 
-        // Create (C) : insertOne
-        // app.post('/my-service', async (req, res) => {
-        //     const myService = req.body;
-        //     const result = await myServiceCollection.insertOne(myService);
-        //     res.send(result);
-        // });
-
         // Update (U) or insert (C) : updateOne //! upsert
         app.put('/my-service/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = { _id: id };
+            const filter = { _id: ObjectId(id) };
             const myService = req.body;
             const option = { upsert: true };  // update or insert
             const updateMyService = {
                 $set: {
-                    _id: myService._id,
+                    product_id: myService._id,
                     rating: myService.rating,
                     name: myService.name,
                     img: myService.img,
@@ -225,7 +218,7 @@ async function run() {
         // Delete (D) delete One
         app.delete('/my-service/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = { _id: id };
+            const filter = { _id: ObjectId(id) };
             const result = await myServiceCollection.deleteOne(filter);
             res.send(result);
         });
