@@ -215,6 +215,7 @@ async function run() {
                     img: myService.img,
                     price: myService.price,
                     description: myService.description,
+                    user_email: myService.user_email
                 }
             };
             const result = await myServiceCollection.updateOne(filter, updateMyService, option);
