@@ -75,9 +75,9 @@ async function run() {
         // Read (R)
         app.get('/reviews', async (req, res) => {
             let query = {};
-            if (req.query.email) {
+            if (req.query.user_email) {
                 query = {
-                    user_email: req.query.email
+                    user_email: req.query.user_email
                 };
             }
             const cursor = reviewCollection.find(query);
