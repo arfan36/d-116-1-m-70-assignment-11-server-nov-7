@@ -176,8 +176,18 @@ async function run() {
 
         // ─── My Service Api ──────────────────────────────────────────
 
-        // Read (R) all
+
+
+        // Read (R) : limit (3)
         app.get('/my-service', async (req, res) => {
+            const query = {};
+            const cursor = myServiceCollection.find(query);
+            const myServices = await cursor.limit(3).toArray();
+            res.send(myServices);
+        });
+
+        // Read (R) all
+        app.get('/my-service-all', async (req, res) => {
             const query = {};
             const cursor = myServiceCollection.find(query);
             const myServices = await cursor.toArray();
@@ -185,11 +195,11 @@ async function run() {
         });
 
         // Create (C) : insertOne
-        app.post('/my-service', async (req, res) => {
-            const myService = req.body;
-            const result = await myServiceCollection.insertOne(myService);
-            res.send(result);
-        });
+        // app.post('/my-service', async (req, res) => {
+        //     const myService = req.body;
+        //     const result = await myServiceCollection.insertOne(myService);
+        //     res.send(result);
+        // });
 
         // Update (U) or insert (C) : updateOne //! upsert
         app.put('/my-service/:id', async (req, res) => {
@@ -210,6 +220,15 @@ async function run() {
             const result = await myServiceCollection.updateOne(filter, updateMyService, option);
             res.send(result);
         });
+
+        // Delete (D) delete One
+        app.delete('/my-service/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: id };
+            const result = await myServiceCollection.deleteOne(filter);
+            res.send(result);
+        });
+
 
     }
     finally {
