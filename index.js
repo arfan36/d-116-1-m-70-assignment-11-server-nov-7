@@ -36,6 +36,7 @@ async function run() {
     try {
         const serviceCollection = client.db('honestDelivery').collection('services');
         const reviewCollection = client.db('honestDelivery').collection('reviews');
+        const myServiceCollection = client.db('honestDelivery').collection('myService');
 
         // (C) : jwt token
         app.post('/jwt', (req, res) => {
@@ -170,6 +171,43 @@ async function run() {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const result = await reviewCollection.deleteOne(filter);
+            res.send(result);
+        });
+
+        // ─── My Service Api ──────────────────────────────────────────
+
+        // Read (R) all
+        app.get('/my-service', async (req, res) => {
+            const query = {};
+            const cursor = myServiceCollection.find(query);
+            const myServices = await cursor.toArray();
+            res.send(myServices);
+        });
+
+        // Create (C) : insertOne
+        app.post('/my-service', async (req, res) => {
+            const myService = req.body;
+            const result = await myServiceCollection.insertOne(myService);
+            res.send(result);
+        });
+
+        // Update (U) or insert (C) : updateOne //! upsert
+        app.put('/my-service/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: id };
+            const myService = req.body;
+            const option = { upsert: true };  // update or insert
+            const updateMyService = {
+                $set: {
+                    _id: myService._id,
+                    rating: myService.rating,
+                    name: myService.name,
+                    img: myService.img,
+                    price: myService.price,
+                    description: myService.description,
+                }
+            };
+            const result = await myServiceCollection.updateOne(filter, updateMyService, option);
             res.send(result);
         });
 
