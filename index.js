@@ -153,7 +153,8 @@ async function run() {
                     user_photoURL: userReview.user_photoURL,
                     user_email: userReview.user_email,
                     review_message: userReview.review_message
-                }
+                },
+                $setOnInsert: { dateAdded: new Date() }
             };
             const result = await reviewCollection.updateOne(filter, updateUserReview, option);
             res.send(result);
@@ -181,7 +182,8 @@ async function run() {
                     user_photoURL: userReview.user_photoURL,
                     user_email: userReview.user_email,
                     review_message: userReview.review_message
-                }
+                },
+                $setOnInsert: { dateAdded: new Date() }
             };
             const result = await reviewCollection.updateOne(filter, updateUserReview, option);
             res.send(result);
@@ -238,7 +240,8 @@ async function run() {
                     price: myService.price,
                     description: myService.description,
                     user_email: myService.user_email
-                }
+                },
+                $setOnInsert: { dateAdded: new Date() }
             };
             const result = await myServiceCollection.updateOne(filter, updateMyService, option);
             res.send(result);
