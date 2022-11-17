@@ -137,16 +137,44 @@ async function run() {
         });
 
         // Create (C) : insertOne
-        app.post('/reviews', async (req, res) => {
-            const reviews = req.body;
-            const result = await reviewCollection.insertOne(reviews);
-            res.send(result);
-        });
+        // app.post('/reviews', async (req, res) => {
+        //     const reviews = req.body;
+        //     const result = await reviewCollection.insertOne(reviews);
+        //     res.send(result);
+        // });
 
-        // Update (U) or insert (C) : updateOne //! upsert
+        // Update (U) or insert (C) : by id //! upsert
         app.put('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
+            const userReview = req.body;
+            const option = { upsert: true };  // update or insert
+            const updateUserReview = {
+                $set: {
+                    product_id: userReview.product_id,
+                    product_name: userReview.product_name,
+                    product_img: userReview.product_img,
+                    product_price: userReview.product_price,
+                    product_description: userReview.product_description,
+                    user_name: userReview.user_name,
+                    user_photoURL: userReview.user_photoURL,
+                    user_email: userReview.user_email,
+                    review_message: userReview.review_message
+                }
+            };
+            const result = await reviewCollection.updateOne(filter, updateUserReview, option);
+            res.send(result);
+        });
+
+        // Update (U) or insert (C) by id and email : //! upsert
+        app.put('/reviews/', async (req, res) => {
+            let filter = {};
+            if (req.query.user_email && req.query.product_id) {
+                filter = {
+                    user_email: req.query.user_email,
+                    product_id: req.query.product_id
+                };
+            }
             const userReview = req.body;
             const option = { upsert: true };  // update or insert
             const updateUserReview = {
@@ -176,12 +204,15 @@ async function run() {
 
         // ─── My Service Api ──────────────────────────────────────────
 
-
-
         // Read (R) : limit (3)
         app.get('/my-service', async (req, res) => {
-            const query = {};
-            const cursor = myServiceCollection.find(query);
+            let filter = {};
+            if (req.query.user_email) {
+                filter = {
+                    user_email: req.query.user_email
+                };
+            }
+            const cursor = myServiceCollection.find(filter);
             const myServices = await cursor.limit(3).toArray();
             res.send(myServices);
         });
@@ -194,10 +225,15 @@ async function run() {
             res.send(myServices);
         });
 
-        // Update (U) or insert (C) : updateOne //! upsert
-        app.put('/my-service/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: ObjectId(id) };
+        // Update (U) or insert (C) by email and id : updateOne //! upsert
+        app.put('/my-service', async (req, res) => {
+            let filter = {};
+            if (req.query.user_email && req.query.product_id) {
+                filter = {
+                    user_email: req.query.user_email,
+                    product_id: req.query.product_id
+                };
+            }
             const myService = req.body;
             const option = { upsert: true };  // update or insert
             const updateMyService = {
