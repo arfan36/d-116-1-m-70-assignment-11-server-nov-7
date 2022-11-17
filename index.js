@@ -73,7 +73,8 @@ async function run() {
         // ─── Review Api ──────────────────────────────────────────────
 
         // Read (R)
-        app.get('/reviews', async (req, res) => {
+        app.get('/reviews', verifyJWT, async (req, res) => {
+
             let query = {};
             if (req.query.user_email) {
                 query = {
@@ -95,7 +96,6 @@ async function run() {
 
         // Read (R) by user_email
         app.get('/reviews-email', async (req, res) => {
-
             let query = {};
             if (req.query.user_email) {
                 query = {
@@ -135,13 +135,6 @@ async function run() {
             const reviews = await cursor.toArray();
             res.send(reviews);
         });
-
-        // Create (C) : insertOne
-        // app.post('/reviews', async (req, res) => {
-        //     const reviews = req.body;
-        //     const result = await reviewCollection.insertOne(reviews);
-        //     res.send(result);
-        // });
 
         // Update (U) or insert (C) : by id //! upsert
         app.put('/reviews/:id', async (req, res) => {
